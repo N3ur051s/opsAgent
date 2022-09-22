@@ -13,7 +13,6 @@ import (
 
 var (
 	ResTasks []*pb.ExecTaskReply
-	restask  *pb.ExecTaskReply
 )
 
 type ExecTask struct {
@@ -36,6 +35,7 @@ func (execTask *ExecTask) Execute() (string, error) {
 }
 
 func (execTask *ExecTask) CallBack(out string, result *task.Result, err error) {
+	var restask *pb.ExecTaskReply
 	var reserr interface{}
 	if err != nil {
 		reserr = err.Error()
