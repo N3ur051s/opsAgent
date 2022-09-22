@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package simpleagent;
+
+import "simpleagent/model.proto";
+import "google/api/annotations.proto";
+
+option go_package = "pkg/proto/pbgo"; 
+
+
+// The hostname service definition.
+service Agent {
+    rpc GetHostname (simpleagent.model.v1.HostnameRequest) returns (simpleagent.model.v1.HostnameReply) {
+        option (google.api.http) = {
+            get: "/v1/grpc/host"
+        };
+    }
+
+    rpc ExecTask (simpleagent.model.v1.ExecTasksRequest) returns (simpleagent.model.v1.ExecTasksReply) {
+        option (google.api.http) = {
+            post: "/v1/grpc/exec"
+            body: "*"
+        };
+    }
+}
