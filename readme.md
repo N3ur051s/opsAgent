@@ -106,7 +106,7 @@ message ExecTasksReply {
 ## Usage
 支持直接命令行调用
 ```
-$./simpleagent
+$ ./simpleagent
 
 The SimpleAgent faithfully collects events and metrics and brings them
 to Server on your behalf so that you can do something useful with your
@@ -133,11 +133,11 @@ Use "./simpleagent [command] --help" for more information about a command.
 ```
 #### 获取hostname
 ```
-$./simpleagent hostname
+$ ./simpleagent hostname
 ```
 #### 并发执行shell任务
 ```
-$./simpleagent exec "task1" "task2" "task3"
+$ ./simpleagent exec "task1" "task2" "task3"
 ```
 
 #### 任务配置详解
