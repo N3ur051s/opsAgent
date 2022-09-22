@@ -144,7 +144,7 @@ $ ./simpleagent exec "task1" "task2" "task3"
 | 参数                | 类型   | 描述                                                         |
 | ------------------- | ------ | ------------------------------------------------------------ |
 | MaxTaskNum          | Int    | 单个 任务池 实例能缓存的任务数量上限，默认为 1000。  | |
-| MaxIoWorkerNum      | Int64  | 单个 任务池 能并发的最多groutine的数量，默认为50，该参数可以在代码内根据实际服务器的性能去配置。 |
+| MaxIoWorkerNum      | Int64  | 单个 任务池 能并发的最多goroutine的数量，默认为50，该参数可以在代码内根据实际服务器的性能去配置。 |
 | MaxRetryTimes       | Int    | 如果某个 任务 首次执行失败，能够对其重试的次数，默认为 10 次。<br/>如果 retries 小于等于 0，该 ProducerBatch 首次发送失败后将直接进入失败队列。 |
 | BaseRetryBackOffMs  | Int64  | 首次重试的退避时间，默认为 100 毫秒。 任务池 采用指数退避算法，第 N 次重试的计划等待时间为 baseRetryBackOffMs * 2^(N-1)。 |
 | MaxRetryBackOffMs   | Int64  | 重试的最大退避时间，默认为 50 秒。    
