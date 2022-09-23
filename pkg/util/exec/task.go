@@ -1,8 +1,10 @@
 package exec
 
 import (
+	"context"
 	"os/exec"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 
@@ -25,8 +27,10 @@ type ExecTask struct {
 }
 
 func (execTask *ExecTask) Execute() (string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
+	defer cancel()
 	log.Infof("*Execute* [%s], UUID: [%v], CMD: %v \n", execTask.Name, execTask.Uuid, execTask.Cmd)
-	out, err := exec.Command("sh", "-c", execTask.Cmd).Output()
+	out, err := exec.CommandContext(ctx, "/bin/sh", "-c", execTask.Cmd).Output()
 	if err != nil {
 		return "", err
 	}

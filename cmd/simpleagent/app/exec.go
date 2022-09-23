@@ -22,7 +22,6 @@ var ExecCommand = &cobra.Command{
 }
 
 func execCommand(cmd *cobra.Command, args []string) error {
-
 	c := task.GetDefaultConfig()
 	taskPool, err := task.NewTaskPool(c)
 	if err != nil {
@@ -30,7 +29,7 @@ func execCommand(cmd *cobra.Command, args []string) error {
 	}
 	taskPool.Start()
 
-	taskPool.SafeClose()
+	defer taskPool.SafeClose()
 
 	for _, cmd := range args {
 		t := &ExecTask{
