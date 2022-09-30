@@ -135,7 +135,7 @@ Use "./simpleagent [command] --help" for more information about a command.
 ```
 $ ./simpleagent hostname
 ```
-#### 并发执行shell任务
+#### 异步执行shell任务
 ```
 $ ./simpleagent exec "task1" "task2" "task3"
 ```
