@@ -5,9 +5,8 @@ import (
 	"expvar"
 	"fmt"
 
-	"simpleagent/conf"
-	"simpleagent/pkg/util/cache"
-	"simpleagent/pkg/util/log"
+	"opsAgent/pkg/util/cache"
+	"opsAgent/pkg/util/log"
 )
 
 const (
@@ -81,7 +80,6 @@ func saveHostname(cacheHostnameKey string, hostname string, providerName string)
 }
 
 func GetWithProvider(ctx context.Context) (Data, error) {
-	log.SetLevel(conf.GetLogLvl())
 
 	cacheHostnameKey := cache.BuildAgentKey("hostname")
 

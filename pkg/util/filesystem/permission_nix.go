@@ -8,7 +8,7 @@ import (
 	"os/user"
 	"strconv"
 
-	"simpleagent/pkg/util/log"
+	"opsAgent/pkg/util/log"
 )
 
 type Permission struct{}
@@ -18,7 +18,7 @@ func NewPermission() (*Permission, error) {
 }
 
 func (p *Permission) RestrictAccessToUser(path string) error {
-	usr, err := user.Lookup("fy-agent")
+	usr, err := user.Lookup("opsAgent")
 	if err != nil {
 		return nil
 	}

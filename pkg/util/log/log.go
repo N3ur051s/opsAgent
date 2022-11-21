@@ -1,37 +1,44 @@
 package log
 
 import (
+	"io"
+	"os"
+
 	l "github.com/sirupsen/logrus"
+
+	. "opsAgent/conf"
 )
 
 var (
-	// 自定义全局log
 	global = l.New()
 )
 
 func init() {
-	// 全局log属性设置
 	l.SetFormatter(&l.TextFormatter{
 		ForceColors:     true,
 		TimestampFormat: "2006-01-02 15:04:05",
 		FullTimestamp:   true,
 	})
-	l.SetLevel(l.DebugLevel)
-	l.SetReportCaller(true)
-
-	// 自定义全局logs属性设置
+	l.SetLevel(GetLogLvl())
 	global.SetFormatter(&l.TextFormatter{
 		ForceColors:     true,
 		TimestampFormat: "2006-01-02 15:04:05",
 		FullTimestamp:   true,
 	})
-	global.SetLevel(l.DebugLevel)
-	global.SetReportCaller(true)
-}
 
-func SetLevel(v l.Level) {
-	l.SetLevel(v)
-	global.SetLevel(v)
+	file, err := os.OpenFile("/var/log/opsAgent/opsAgent.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	writers := []io.Writer{
+		file,
+		os.Stdout,
+	}
+	fileAndStdoutWriter := io.MultiWriter(writers...)
+	if err == nil {
+		l.SetOutput(fileAndStdoutWriter)
+		global.SetOutput(fileAndStdoutWriter)
+	} else {
+		global.Errorf("failed to log to file: [%s]", err)
+	}
+	global.SetLevel(GetLogLvl())
 }
 
 func Debug(i ...interface{}) {

@@ -4,7 +4,7 @@ import (
 	"context"
 	"os"
 
-	"simpleagent/pkg/util/log"
+	"opsAgent/pkg/util/log"
 )
 
 func warnIfNotCanonicalHostname(ctx context.Context, hostname string) {

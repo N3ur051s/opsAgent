@@ -8,7 +8,7 @@ import (
 
 	"google.golang.org/grpc/grpclog"
 
-	"simpleagent/pkg/util/log"
+	"opsAgent/pkg/util/log"
 )
 
 const (

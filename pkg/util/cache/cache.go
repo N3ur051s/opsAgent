@@ -14,7 +14,6 @@ const (
 	NoExpiration     = cache.NoExpiration
 )
 
-// Cache provides an in-memory key:value store similar to memcached
 var Cache = cache.New(defaultExpire, defaultPurge)
 
 func BuildAgentKey(keys ...string) string {

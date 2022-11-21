@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package opsAgent.api.v1;
+
+import "opsAgent/model.proto";
+import "google/api/annotations.proto";
+
+option go_package = "pkg/proto/pbgo"; 
+
+
+// The hostname service definition.
+service Agent {
+    rpc GetHostname (opsAgent.model.v1.HostnameRequest) returns (opsAgent.model.v1.HostnameReply) {
+        option (google.api.http) = {
+            get: "/v1/grpc/host"
+        };
+    }
+
+    rpc ExecTask (opsAgent.model.v1.ExecTaskRequest) returns (opsAgent.model.v1.ExecTaskReply) {
+        option (google.api.http) = {
+            post: "/v1/grpc/exec"
+            body: "*"
+        };
+    }
+
+    rpc WriteFile (opsAgent.model.v1.WriteFilesRequest) returns (opsAgent.model.v1.WriteFilesReply) {
+        option (google.api.http) = {
+            post: "/v1/grpc/writefile"
+            body: "*"
+        };
+    }
+}

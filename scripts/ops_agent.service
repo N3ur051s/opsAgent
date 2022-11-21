@@ -1,0 +1,17 @@
+[Unit]
+Description=opsAgent
+Documentation=https://github.com/ArcticClint/opsAgent
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=opsAgent
+ExecStart=/usr/bin/opsAgent -c /etc/opsAgent/opsAgent.conf run -p /etc/opsAgent/opsAgent.pid
+ExecStop=/usr/bin/opsAgent stop
+Restart=on-failure
+RestartForceExitStatus=SIGPIPE
+KillMode=control-group
+
+[Install]
+WantedBy=multi-user.target

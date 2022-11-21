@@ -45,7 +45,7 @@ GOOS ?= $(shell go env GOOS)
 GOARCH ?= $(shell go env GOARCH)
 
 pkgdir ?= build/dist
-homedir ?= ${HOME}/.simpleagent
+homedir ?= ${HOME}/.opsAgent
 
 
 .PHONY: deps
@@ -58,15 +58,15 @@ version:
 
 .PHONY: build
 build:
-	go build -tags "$(BUILDTAGS)" ./cmd/simpleagent
+	go build -tags "$(BUILDTAGS)" ./cmd/opsAgent
 
-.PHONY: simpleagent
-simpleagent: build
+.PHONY: opsAgent
+opsAgent: build
 
 # Used by dockerfile builds
 .PHONY: go-install
 go-install:
-	go install -mod=mod ./cmd/simpleagent
+	go install -mod=mod ./cmd/opsAgent
 
 
 .PHONY: tidy
@@ -82,23 +82,25 @@ tidy:
 install: $(buildbin)
 	@mkdir -pv $(homedir)
 	@mkdir -pv $(DESTDIR)/conf
-	@if [ $(GOOS) = "linux" ]; then cp -fv conf/simpleagent.conf $(homedir)/.conf; fi
-	@if [ $(GOOS) = "linux" ]; then cp -fv conf/simpleagent.conf $(DESTDIR)/conf/simpleagent.conf; fi
-	@if [ $(GOOS) = "linux" ]; then cp -fv $(buildbin) $(DESTDIR); fi
+	@if [ $(GOOS) = "linux" ]; then cp -fv conf/opsAgent.conf $(homedir)/.conf; fi
+	@if [ $(GOOS) = "linux" ]; then cp -fv conf/opsAgent.conf $(DESTDIR)/conf/opsAgent.conf.sample; fi
+	@cp -fv $(buildbin) $(DESTDIR)$(bindir)
+	@if [ $(GOOS) = "linux" ]; then mkdir -pv $(DESTDIR)/lib/scripts; fi
+	@if [ $(GOOS) = "linux" ]; then cp -af scripts/opsAgent.service $(DESTDIR)/lib/scripts; fi
+	@if [ $(GOOS) = "linux" ]; then cp -af scripts/*.sh $(DESTDIR)/lib/scripts/; fi
 
 $(buildbin):
 	echo $(GOOS)
 	@mkdir -pv $(dir $@)
-	go build -o $(dir $@) ./cmd/simpleagent
+	go build -o $(dir $@) ./cmd/opsAgent
 
 .PHONY: clean
 clean:
-	rm -f simpleagent
-	rm -f simpleagent.exe
+	rm -f opsAgent
+	rm -f opsAgent.exe
 	rm -rf build
-	rm -rf ${HOME}/.simpleagent
 
-# Define packages simpleagent supports, organized by architecture with a rule to echo the list to limit include_packages
+# Define packages opsAgent supports, organized by architecture with a rule to echo the list to limit include_packages
 # e.g. make package include_packages="$(make amd64)"
 mips += linux_mips.tar.gz mips.deb
 .PHONY: mips
@@ -172,20 +174,23 @@ $(include_packages):
 			--input-type dir \
 			--output-type rpm \
 			--vendor arctic \
-			--url https://github.com/ArcticClint/simpleagent \
-			--license MIT \
+			--url https://github.com/ArcticClint/opsAgent \
 			--maintainer arctic \
-			--config-files /etc/simpleagent/simpleagent.conf \
-			--description "simpleagent." \
+			--config-files conf/opsAgent.conf \
+			--after-install scripts/rpm/post-install.sh \
+			--before-install scripts/rpm/pre-install.sh \
+			--after-remove scripts/rpm/post-remove.sh \
+			--description "opsAgent." \
 			--depends coreutils \
 			--depends shadow-utils \
 			--rpm-digest sha256 \
 			--rpm-posttrans scripts/rpm/post-install.sh \
-			--name simpleagent \
+			--name opsAgent \
 			--version $(version) \
 			--iteration $(rpm_iteration) \
 			--chdir $(DESTDIR) \
-			--package $(pkgdir)/simpleagent-$(rpm_version).$@ ;\
+			--package $(pkgdir)/opsAgent-$(rpm_version).$@ \
+			--prefix /opt/opsAgent; \
 	elif [ "$(suffix $@)" = ".deb" ]; then \
 		fpm --force \
 			--log info \
@@ -193,20 +198,19 @@ $(include_packages):
 			--input-type dir \
 			--output-type deb \
 			--vendor arctic \
-			--url https://github.com/ArcticClint/simpleagent \
-			--license MIT \
+			--url https://github.com/ArcticClint/opsAgent \
 			--maintainer arctic \
-			--config-files /etc/simpleagent/simpleagent.conf.sample \
-			--description "simpleagent." \
-			--name simpleagent \
+			--config-files /etc/opsAgent/opsAgent.conf.sample \
+			--description "opsAgent." \
+			--name opsAgent \
 			--version $(version) \
 			--iteration $(deb_iteration) \
 			--chdir $(DESTDIR) \
-			--package $(pkgdir)/simpleagent_$(deb_version)_$@	;\
+			--package $(pkgdir)/opsAgent_$(deb_version)_$@	;\
 	elif [ "$(suffix $@)" = ".zip" ]; then \
-		(cd $(dir $(DESTDIR)) && zip -r - ./*) > $(pkgdir)/simpleagent-$(tar_version)_$@ ;\
+		(cd $(dir $(DESTDIR)) && zip -r - ./*) > $(pkgdir)/opsAgent-$(tar_version)_$@ ;\
 	elif [ "$(suffix $@)" = ".gz" ]; then \
-		tar --owner 0 --group 0 -czvf $(pkgdir)/simpleagent-$(tar_version)_$@ -C $(dir $(DESTDIR)) . ;\
+		tar --owner 0 --group 0 -czvf $(pkgdir)/opsAgent-$(tar_version)_$@ -C $(dir $(DESTDIR)) . ;\
 	fi
 
 amd64.deb x86_64.rpm linux_amd64.tar.gz: export GOOS := linux
@@ -289,6 +293,5 @@ windows_i386.zip windows_amd64.zip: export EXEEXT := .exe
 %.zip: export pkg := zip
 %.zip: export prefix := /
 
-%.deb %.rpm %.tar.gz %.zip: export DESTDIR = build/$(GOOS)-$(GOARCH)$(GOARM)$(cgo)-$(pkg)/simpleagent-$(version)
-%.deb %.rpm %.tar.gz %.zip: export buildbin = build/$(GOOS)-$(GOARCH)$(GOARM)$(cgo)/simpleagent$(EXEEXT)
-%.deb %.rpm %.tar.gz %.zip: export LDFLAGS = -w -s
+%.deb %.rpm %.tar.gz %.zip: export DESTDIR = build/$(GOOS)-$(GOARCH)$(GOARM)$(cgo)-$(pkg)/opsAgent-$(version)
+%.deb %.rpm %.tar.gz %.zip: export buildbin = build/$(GOOS)-$(GOARCH)$(GOARM)$(cgo)/opsAgent$(EXEEXT)

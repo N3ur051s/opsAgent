@@ -7,9 +7,9 @@ import (
 	"os"
 	"strings"
 
-	. "simpleagent/conf"
+	. "opsAgent/conf"
 
-	"simpleagent/pkg/util/hostname/validate"
+	"opsAgent/pkg/util/hostname/validate"
 )
 
 var (

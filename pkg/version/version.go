@@ -49,29 +49,6 @@ func New(version, commit string) (Version, error) {
 	return av, nil
 }
 
-func (v *Version) String() string {
-	ver := v.GetNumber()
-	if v.Pre != "" {
-		ver = fmt.Sprintf("%s-%s", ver, v.Pre)
-	}
-	if v.Meta != "" {
-		ver = fmt.Sprintf("%s+%s", ver, v.Meta)
-	}
-	if v.Commit != "" {
-		if v.Meta != "" {
-			ver = fmt.Sprintf("%s.commit.%s", ver, v.Commit)
-		} else {
-			ver = fmt.Sprintf("%s+commit.%s", ver, v.Commit)
-		}
-	}
-
-	return ver
-}
-
-func (v *Version) GetNumber() string {
-	return fmt.Sprintf("%d.%d.%d", v.Major, v.Minor, v.Patch)
-}
-
 func (v *Version) GetNumberAndPre() string {
 	version := fmt.Sprintf("%d.%d.%d", v.Major, v.Minor, v.Patch)
 	if v.Pre != "" {

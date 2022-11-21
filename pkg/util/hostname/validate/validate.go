@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	"simpleagent/pkg/util/log"
+	"opsAgent/pkg/util/log"
 )
 
 const maxLength = 255
